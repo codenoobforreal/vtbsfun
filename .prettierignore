@@ -1,0 +1,9 @@
+# Ignore artifacts:
+build
+coverage
+
+# tanstack
+routeTree.gen.ts
+
+# tauri
+src-tauri
