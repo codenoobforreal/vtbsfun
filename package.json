@@ -8,7 +8,11 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint": "eslint src --ext .ts,.tsx",
+    "format-check": "prettier . --check --ignore-unknown",
+    "format-fix": "prettier . --fix --ignore-unknown",
+    "ci": "bun run lint && bun run format-check"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-beta.4",
