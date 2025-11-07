@@ -16,19 +16,9 @@ import { useQuery } from "@tanstack/react-query";
 import { VtbQueries } from "@/apis";
 
 export function List() {
-  const {
-    data,
-    isError,
-    error,
-    isPending,
-    isFetched,
-    isSuccess,
-    isFetching,
-    isStale,
-    dataUpdatedAt,
-  } = useQuery(VtbQueries.list());
-
-  const isFreshCachedData = isSuccess && !isFetching && !isStale;
+  const { data, isError, error, isPending, dataUpdatedAt } = useQuery(
+    VtbQueries.list(),
+  );
 
   const { search, limit, condition } = useRankStore(
     useShallow(({ search, limit, condition }) => ({
@@ -40,7 +30,7 @@ export function List() {
 
   const deferredSearch = useDeferredValue(search);
 
-  const AllVtbsIndex = useMemo(() => {
+  const vtbListIndex = useMemo(() => {
     if (!data) return null;
 
     const index = new Document({
@@ -65,8 +55,8 @@ export function List() {
 
   // 搜索过滤排序
   const searchFilterData = useMemo(() => {
-    // 提前返回：如果数据不存在或未获取完成
-    if (!data || !isFetched) {
+    // 提前返回：如果数据不存在
+    if (!data) {
       return [];
     }
 
@@ -76,16 +66,18 @@ export function List() {
       searchedData = data;
     } else {
       // 确保索引存在
-      if (!AllVtbsIndex) {
+      if (!vtbListIndex) {
         searchedData = data;
       } else {
-        searchedData = AllVtbsIndex.search({
-          query: deferredSearch,
-          /** 当进行多字段搜索时才需要打开这个设置使得结果不重复。merge参数用于控制如何合并来自不同字段的搜索结果
-           */
-          merge: true,
-          enrich: true,
-        }).map((result) => result.doc as unknown as Info);
+        searchedData = vtbListIndex
+          .search({
+            query: deferredSearch,
+            /** 当进行多字段搜索时才需要打开这个设置使得结果不重复。merge参数用于控制如何合并来自不同字段的搜索结果
+             */
+            merge: true,
+            enrich: true,
+          })
+          .map((result) => result.doc as unknown as Info);
       }
     }
 
@@ -94,7 +86,7 @@ export function List() {
       [conditionToSelectFn[condition]],
       limit,
     );
-  }, [condition, data, isFetched, limit, deferredSearch, AllVtbsIndex]);
+  }, [condition, data, limit, deferredSearch, vtbListIndex]);
 
   if (isPending) {
     return (
@@ -112,12 +104,9 @@ export function List() {
 
   return (
     <div className="space-y-2">
-      {isFreshCachedData && (
-        <Badge variant="success">
-          当前数据已缓存于{" "}
-          {timeFormatUtils.formatChineseDateTime(dataUpdatedAt)}
-        </Badge>
-      )}
+      <Badge variant="success">
+        当前数据更新于：{timeFormatUtils.formatChineseDateTime(dataUpdatedAt)}
+      </Badge>
       <div className="grid grid-cols-1 justify-items-center-safe 2xl:grid-cols-2 2xl:justify-items-stretch">
         {searchFilterData.map((item) => {
           return <Item data={item} key={item.mid} />;

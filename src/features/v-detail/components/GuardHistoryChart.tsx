@@ -31,18 +31,9 @@ function Chart() {
   const { mId } = useParams({ from: "/all/$mId" });
   const mIdInNumber = Number(mId);
 
-  const {
-    data,
-    isPending,
-    isError,
-    error,
-    // isSuccess,
-    // isFetching,
-    // isStale,
-    // dataUpdatedAt,
-  } = useQuery(VtbQueries.guardHistory(mIdInNumber));
-
-  // const isFreshCachedData = isSuccess && !isFetching && !isStale;
+  const { data, isPending, isError, error } = useQuery(
+    VtbQueries.guardHistory(mIdInNumber),
+  );
 
   const chartData = useMemo(() => {
     if (!data) return [];

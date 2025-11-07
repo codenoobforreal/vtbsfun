@@ -38,18 +38,9 @@ function DetailSection() {
   const { mId } = useParams({ from: "/all/$mId" });
   const mIdInNumber = Number(mId);
 
-  const {
-    data,
-    isPending,
-    isError,
-    error,
-    isSuccess,
-    isFetching,
-    isStale,
-    dataUpdatedAt,
-  } = useQuery(VtbQueries.detail(mIdInNumber));
-
-  const isFreshCachedData = isSuccess && !isFetching && !isStale;
+  const { data, isPending, isError, error, dataUpdatedAt } = useQuery(
+    VtbQueries.detail(mIdInNumber),
+  );
 
   if (isPending) {
     return (
@@ -110,14 +101,9 @@ function DetailSection() {
           <img src={topPhotoUrl} alt="空间顶部图片" title="空间顶部图片" />
         </Card>
       )}
-
-      {isFreshCachedData && (
-        <Badge variant="success">
-          当前数据已缓存于{" "}
-          {timeFormatUtils.formatChineseDateTime(dataUpdatedAt)}
-        </Badge>
-      )}
-
+      <Badge variant="success">
+        当前数据更新于：{timeFormatUtils.formatChineseDateTime(dataUpdatedAt)}
+      </Badge>
       <div className="grid gap-4 grid-cols-3 grid-flow-dense lg:grid-cols-4 lg:gap-4 xl:grid-cols-5 xl:gap-6">
         <DetailCard className="p-0">
           <img
