@@ -1,18 +1,5 @@
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { Duration, isWithinInterval, sub } from "date-fns";
-import { BaseIssue, BaseSchema, safeParse } from "valibot";
-
-export function safeParseInputAgainstSchema<TInput>(
-  schema: BaseSchema<TInput, TInput, BaseIssue<unknown>>,
-  input: unknown,
-) {
-  const validation = safeParse(schema, input);
-  if (validation.issues) {
-    console.error(validation.issues);
-    throw new Error("数据校验未通过");
-  }
-  return validation.output;
-}
 
 /** 使用默认浏览器打开 url */
 export async function openUrlWithDefaultBrower(url: string) {

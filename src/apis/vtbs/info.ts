@@ -1,5 +1,4 @@
 import { vtbsApiClient } from "../clients";
-import { safeParseInputAgainstSchema } from "@/utils";
 import {
   object,
   number,
@@ -11,6 +10,7 @@ import {
   pipe,
   boolean,
   literal,
+  parse,
 } from "valibot";
 
 const lastLiveSchema = object({
@@ -46,12 +46,11 @@ const InfoSchema = object({
 
 const InfoListSchema = array(InfoSchema);
 
-type InfoList = InferOutput<typeof InfoListSchema>;
 export type Info = InferOutput<typeof InfoSchema>;
 // type LastLive = InferOutput<typeof LastLiveSchema>;
 // export type GuardTypeIndex = InferOutput<typeof GuardTypeIndexSchema>;
 
-export async function getInfoList(): Promise<InfoList> {
+export async function getInfoList() {
   const res = await vtbsApiClient.get("v1/info").json();
-  return safeParseInputAgainstSchema<InfoList>(InfoListSchema, res);
+  return parse(InfoListSchema, res);
 }

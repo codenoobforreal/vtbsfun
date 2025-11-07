@@ -1,6 +1,5 @@
 import { vtbsApiClient } from "../clients";
-import { object, string, number, array, InferInput, union } from "valibot";
-import { safeParseInputAgainstSchema } from "@/utils";
+import { object, string, number, array, union, parse } from "valibot";
 
 const lastLiveSchema = object({
   online: number(),
@@ -33,9 +32,7 @@ const detailSchema = object({
   liveStartTime: number(),
 });
 
-type Detail = InferInput<typeof detailSchema>;
-
-export async function getDetail(id: number): Promise<Detail> {
+export async function getDetail(id: number) {
   const res = await vtbsApiClient.get(`v1/detail/${id}`).json();
-  return safeParseInputAgainstSchema<Detail>(detailSchema, res);
+  return parse(detailSchema, res);
 }

@@ -1,7 +1,6 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import { InferInput, object, number, array } from "valibot";
+import { parse, object, number, array } from "valibot";
 import { vtbsApiClient } from "../clients";
-import { safeParseInputAgainstSchema } from "@/utils";
 
 const onlineHistorySchema = array(
   object({
@@ -12,11 +11,9 @@ const onlineHistorySchema = array(
   }),
 );
 
-type OnlineHistory = InferInput<typeof onlineHistorySchema>;
-
-async function getOnlineHistory(): Promise<OnlineHistory> {
+async function getOnlineHistory() {
   const res = await vtbsApiClient.get(`v2/bulkOnline`).json();
-  return safeParseInputAgainstSchema<OnlineHistory>(onlineHistorySchema, res);
+  return parse(onlineHistorySchema, res);
 }
 
 export function createOnlineHistoryQueryOptions() {

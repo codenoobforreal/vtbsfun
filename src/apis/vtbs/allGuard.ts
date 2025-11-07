@@ -1,15 +1,6 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { vtbsApiClient } from "../clients";
-import {
-  object,
-  string,
-  number,
-  array,
-  InferInput,
-  tuple,
-  record,
-} from "valibot";
-import { safeParseInputAgainstSchema } from "@/utils";
+import { object, string, number, array, tuple, record, parse } from "valibot";
 
 const allGuardSchema = record(
   string(),
@@ -21,11 +12,9 @@ const allGuardSchema = record(
   }),
 );
 
-type AllGuard = InferInput<typeof allGuardSchema>;
-
-async function getAllGuard(): Promise<AllGuard> {
+async function getAllGuard() {
   const res = await vtbsApiClient.get(`v1/guard/all`).json();
-  return safeParseInputAgainstSchema<AllGuard>(allGuardSchema, res);
+  return parse(allGuardSchema, res);
 }
 
 export function createAllGuardQueryOptions() {

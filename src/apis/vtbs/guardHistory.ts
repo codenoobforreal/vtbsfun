@@ -1,6 +1,5 @@
-import { InferInput, object, number, array } from "valibot";
+import { object, number, array, parse } from "valibot";
 import { vtbsApiClient } from "../clients";
-import { safeParseInputAgainstSchema } from "@/utils";
 
 const guardHistorySchema = array(
   object({
@@ -9,9 +8,7 @@ const guardHistorySchema = array(
   }),
 );
 
-type GuardHistory = InferInput<typeof guardHistorySchema>;
-
-export async function getGuardHistory(id: number): Promise<GuardHistory> {
+export async function getGuardHistory(id: number) {
   const res = await vtbsApiClient.get(`v2/bulkGuard/${id}`).json();
-  return safeParseInputAgainstSchema<GuardHistory>(guardHistorySchema, res);
+  return parse(guardHistorySchema, res);
 }

@@ -1,7 +1,6 @@
-import { array, object, number, string, InferInput } from "valibot";
+import { array, object, number, string, parse } from "valibot";
 import { vtbsApiClient } from "../clients";
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import { safeParseInputAgainstSchema } from "@/utils";
 
 const guardsByIdSchema = array(
   object({
@@ -13,11 +12,9 @@ const guardsByIdSchema = array(
   }),
 );
 
-type GuardsById = InferInput<typeof guardsByIdSchema>;
-
-async function getGuardsById(id: number): Promise<GuardsById> {
+async function getGuardsById(id: number) {
   const res = await vtbsApiClient.get(`v1/guard/${id}`).json();
-  return safeParseInputAgainstSchema<GuardsById>(guardsByIdSchema, res);
+  return parse(guardsByIdSchema, res);
 }
 
 export function createGuardsByIdQueryOptions(id: number) {

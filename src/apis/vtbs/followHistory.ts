@@ -1,6 +1,5 @@
-import { InferInput, object, number, array } from "valibot";
+import { object, number, array, parse } from "valibot";
 import { vtbsApiClient } from "../clients";
-import { safeParseInputAgainstSchema } from "@/utils";
 
 const followHistorySchema = array(
   object({
@@ -10,9 +9,7 @@ const followHistorySchema = array(
   }),
 );
 
-type FollowHistory = InferInput<typeof followHistorySchema>;
-
-export async function getFollowHistory(id: number): Promise<FollowHistory> {
+export async function getFollowHistory(id: number) {
   const res = await vtbsApiClient.get(`v2/bulkActive/${id}`).json();
-  return safeParseInputAgainstSchema<FollowHistory>(followHistorySchema, res);
+  return parse(followHistorySchema, res);
 }

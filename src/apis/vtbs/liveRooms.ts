@@ -1,15 +1,12 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { vtbsApiClient } from "../clients";
-import { string, array, InferInput } from "valibot";
-import { safeParseInputAgainstSchema } from "@/utils";
+import { string, array, parse } from "valibot";
 
 const liveRoomsSchema = array(string());
 
-type LiveRooms = InferInput<typeof liveRoomsSchema>;
-
-async function getLiveRooms(): Promise<LiveRooms> {
+async function getLiveRooms() {
   const res = await vtbsApiClient.get(`v1/living`).json();
-  return safeParseInputAgainstSchema<LiveRooms>(liveRoomsSchema, res);
+  return parse(liveRoomsSchema, res);
 }
 
 export function createLiveRoomsQueryOptions() {

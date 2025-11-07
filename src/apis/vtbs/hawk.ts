@@ -1,7 +1,6 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import { string, InferInput, object, number, array } from "valibot";
+import { string, parse, object, number, array } from "valibot";
 import { vtbsApiClient } from "../clients";
-import { safeParseInputAgainstSchema } from "@/utils";
 
 const hawkSchema = object({
   day: array(
@@ -18,11 +17,9 @@ const hawkSchema = object({
   ),
 });
 
-type Hawk = InferInput<typeof hawkSchema>;
-
-async function getHawk(): Promise<Hawk> {
+async function getHawk() {
   const res = await vtbsApiClient.get(`v1/hawk`).json();
-  return safeParseInputAgainstSchema<Hawk>(hawkSchema, res);
+  return parse(hawkSchema, res);
 }
 
 export function createHawkQueryOptions() {

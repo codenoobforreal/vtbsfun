@@ -1,7 +1,6 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import { string, InferInput, object, number } from "valibot";
+import { string, parse, object, number } from "valibot";
 import { vtbsApiClient } from "../clients";
-import { safeParseInputAgainstSchema } from "@/utils";
 
 const roomInfoSchema = object({
   uid: number(),
@@ -11,11 +10,9 @@ const roomInfoSchema = object({
   live_time: number(),
 });
 
-type RoomInfo = InferInput<typeof roomInfoSchema>;
-
-async function getRoomInfo(id: number): Promise<RoomInfo> {
+async function getRoomInfo(id: number) {
   const res = await vtbsApiClient.get(`v1/room/${id}`).json();
-  return safeParseInputAgainstSchema<RoomInfo>(roomInfoSchema, res);
+  return parse(roomInfoSchema, res);
 }
 
 export function createRoomInfoQueryOptions(id: number) {
