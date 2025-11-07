@@ -1,17 +1,16 @@
-import { createDetailQueryOptions, useDetailQuery } from "@/apis/vtbs/detail";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { getProtocolAndDomain, openUrlWithDefaultBrower } from "@/utils";
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { ComponentPropsWithoutRef } from "react";
 import { BILI_LIVE_ROOM_DOMAIN, BILI_PERSON_SPACE_DOMAIN } from "@/constants";
-import { createFollowHistoryQueryOptions } from "@/apis/vtbs/followHistory";
-import { createGuardHistoryQueryOptions } from "@/apis/vtbs/guardHistory";
 import { FollowHistoryChart } from "@/features/v-detail/components/FollowHistoryChart";
 import { GuardHistoryChart } from "@/features/v-detail/components/GuardHistoryChart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { timeFormatUtils } from "@/utils/time";
 import { Badge } from "@/components/ui/badge";
+import { VtbQueries } from "@/apis";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/all/$mId")({
   component: DetailPage,
@@ -20,9 +19,9 @@ export const Route = createFileRoute("/all/$mId")({
     const { mId } = params;
     const mIdInNumber = Number(mId);
 
-    queryClient.prefetchQuery(createDetailQueryOptions(mIdInNumber));
-    queryClient.prefetchQuery(createFollowHistoryQueryOptions(mIdInNumber));
-    queryClient.prefetchQuery(createGuardHistoryQueryOptions(mIdInNumber));
+    queryClient.prefetchQuery(VtbQueries.detail(mIdInNumber));
+    queryClient.prefetchQuery(VtbQueries.followHistory(mIdInNumber));
+    queryClient.prefetchQuery(VtbQueries.guardHistory(mIdInNumber));
   },
 });
 
@@ -48,7 +47,7 @@ function DetailSection() {
     isFetching,
     isStale,
     dataUpdatedAt,
-  } = useDetailQuery(mIdInNumber);
+  } = useQuery(VtbQueries.detail(mIdInNumber));
 
   const isFreshCachedData = isSuccess && !isFetching && !isStale;
 

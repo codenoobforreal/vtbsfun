@@ -1,6 +1,6 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { InferInput, object, number, array } from "valibot";
-import { vtbsApiClient } from "..";
+import { vtbsApiClient } from "../clients";
 import { safeParseInputAgainstSchema } from "@/utils";
 
 const onlineHistorySchema = array(

@@ -1,4 +1,4 @@
-import { Info, useInfoListQuery } from "@/apis/vtbs/info";
+import { Info } from "@/apis/vtbs/info";
 import { useRankStore } from "@/store";
 import { useDeferredValue, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -12,6 +12,8 @@ import { openUrlWithDefaultBrower } from "@/utils";
 import { BILI_LIVE_ROOM_DOMAIN, BILI_PERSON_SPACE_DOMAIN } from "@/constants";
 import { timeFormatUtils } from "@/utils/time";
 import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
+import { VtbQueries } from "@/apis";
 
 export function List() {
   const {
@@ -24,7 +26,7 @@ export function List() {
     isFetching,
     isStale,
     dataUpdatedAt,
-  } = useInfoListQuery();
+  } = useQuery(VtbQueries.list());
 
   const isFreshCachedData = isSuccess && !isFetching && !isStale;
 

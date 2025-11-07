@@ -11,7 +11,8 @@ import { useParams } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatTimestamp } from "@/utils/time";
-import { useGuardHistoryQuery } from "@/apis/vtbs/guardHistory";
+import { useQuery } from "@tanstack/react-query";
+import { VtbQueries } from "@/apis";
 
 export function GuardHistoryChart() {
   return (
@@ -39,7 +40,7 @@ function Chart() {
     // isFetching,
     // isStale,
     // dataUpdatedAt,
-  } = useGuardHistoryQuery(mIdInNumber);
+  } = useQuery(VtbQueries.guardHistory(mIdInNumber));
 
   // const isFreshCachedData = isSuccess && !isFetching && !isStale;
 

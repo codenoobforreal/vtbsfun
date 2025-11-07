@@ -1,5 +1,5 @@
 import { array, object, number, string, InferInput } from "valibot";
-import { vtbsApiClient } from "..";
+import { vtbsApiClient } from "../clients";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { safeParseInputAgainstSchema } from "@/utils";
 

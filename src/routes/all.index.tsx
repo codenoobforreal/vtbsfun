@@ -1,4 +1,4 @@
-import { createInfoListQueryOptions } from "@/apis/vtbs/info";
+import { VtbQueries } from "@/apis";
 import ConditionSelector from "@/features/all/components/ConditionSelector";
 import LimitSelector from "@/features/all/components/LimitSelector";
 import { List } from "@/features/all/components/List";
@@ -8,7 +8,7 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/all/")({
   component: RankPage,
   loader: ({ context }) => {
-    context.queryClient.prefetchQuery(createInfoListQueryOptions());
+    context.queryClient.prefetchQuery(VtbQueries.list());
   },
 });
 

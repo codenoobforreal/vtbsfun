@@ -1,5 +1,4 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
-import { vtbsApiClient } from "..";
+import { vtbsApiClient } from "../clients";
 import { object, string, number, array, InferInput, union } from "valibot";
 import { safeParseInputAgainstSchema } from "@/utils";
 
@@ -36,19 +35,7 @@ const detailSchema = object({
 
 type Detail = InferInput<typeof detailSchema>;
 
-async function getDetail(id: number): Promise<Detail> {
+export async function getDetail(id: number): Promise<Detail> {
   const res = await vtbsApiClient.get(`v1/detail/${id}`).json();
   return safeParseInputAgainstSchema<Detail>(detailSchema, res);
-}
-
-export function createDetailQueryOptions(id: number) {
-  return queryOptions({
-    queryKey: ["vtb-detail", id],
-    queryFn: () => getDetail(id),
-  });
-}
-
-/** id 是用户 id 即 mid */
-export function useDetailQuery(id: number) {
-  return useQuery(createDetailQueryOptions(id));
 }

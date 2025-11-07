@@ -1,6 +1,6 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { string, InferInput, object, number } from "valibot";
-import { vtbsApiClient } from "..";
+import { vtbsApiClient } from "../clients";
 import { safeParseInputAgainstSchema } from "@/utils";
 
 const roomInfoSchema = object({

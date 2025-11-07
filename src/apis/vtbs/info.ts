@@ -1,5 +1,4 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
-import { vtbsApiClient } from "..";
+import { vtbsApiClient } from "../clients";
 import { safeParseInputAgainstSchema } from "@/utils";
 import {
   object,
@@ -52,18 +51,7 @@ export type Info = InferOutput<typeof InfoSchema>;
 // type LastLive = InferOutput<typeof LastLiveSchema>;
 // export type GuardTypeIndex = InferOutput<typeof GuardTypeIndexSchema>;
 
-async function getInfoList(): Promise<InfoList> {
+export async function getInfoList(): Promise<InfoList> {
   const res = await vtbsApiClient.get("v1/info").json();
   return safeParseInputAgainstSchema<InfoList>(InfoListSchema, res);
-}
-
-export function createInfoListQueryOptions() {
-  return queryOptions({
-    queryKey: ["vtbsInfoList"],
-    queryFn: getInfoList,
-  });
-}
-
-export function useInfoListQuery() {
-  return useQuery(createInfoListQueryOptions());
 }

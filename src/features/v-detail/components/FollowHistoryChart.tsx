@@ -7,11 +7,12 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatLargeNumber, sampleTimeSeriesData } from "@/utils";
-import { useFollowHistoryQuery } from "@/apis/vtbs/followHistory";
 import { useParams } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatTimestamp } from "@/utils/time";
+import { VtbQueries } from "@/apis";
+import { useQuery } from "@tanstack/react-query";
 
 export function FollowHistoryChart() {
   return (
@@ -30,8 +31,9 @@ function Chart() {
   const { mId } = useParams({ from: "/all/$mId" });
   const mIdInNumber = Number(mId);
 
-  const { data, isPending, isError, error } =
-    useFollowHistoryQuery(mIdInNumber);
+  const { data, isPending, isError, error } = useQuery(
+    VtbQueries.followHistory(mIdInNumber),
+  );
 
   const chartData = useMemo(() => {
     if (!data) return [];
