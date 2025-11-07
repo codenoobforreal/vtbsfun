@@ -23,7 +23,7 @@ export type ConditionKey =
 
 interface ConditionConfig {
   label: string;
-  selector: (info: Info) => number;
+  selector: (info: Info) => number | undefined | null;
 }
 
 const conditionConfig: Record<ConditionKey, ConditionConfig> = {
@@ -41,7 +41,8 @@ const conditionConfig: Record<ConditionKey, ConditionConfig> = {
   },
   byLastLive: {
     label: "上次直播",
-    selector: (info: Info) => info.lastLive.time,
+    selector: (info: Info) =>
+      "time" in info.lastLive ? info.lastLive.time : undefined,
   },
   byGuardNum: {
     label: "舰团",

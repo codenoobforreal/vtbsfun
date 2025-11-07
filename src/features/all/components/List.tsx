@@ -3,7 +3,7 @@ import { useRankStore } from "@/store";
 import { useDeferredValue, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { Charset, Document, DocumentData } from "flexsearch";
-import { MultiConditionSorter } from "../infoSorter";
+import { multiConditionSortDescending } from "../infoSorter";
 import { conditionToLabel, conditionToSelectFn } from "./ConditionSelector";
 import { Card } from "@/components/ui/card";
 import { Link } from "@tanstack/react-router";
@@ -87,7 +87,7 @@ export function List() {
       }
     }
 
-    return MultiConditionSorter.sortDescending(
+    return multiConditionSortDescending(
       searchedData,
       [conditionToSelectFn[condition]],
       limit,
