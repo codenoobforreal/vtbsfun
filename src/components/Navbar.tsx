@@ -7,8 +7,8 @@ import { Link, LinkComponent } from "@tanstack/react-router";
 import { TanstackLinkComponent } from "./CustomLink";
 
 const navigationLinks = [
-  { to: "/" as const, children: "关于", preload: "render" as const },
-  { to: "/all" as const, children: "全体" },
+  { to: "/" as const, children: "关于" },
+  { to: "/all" as const, children: "全体", preload: "render" as const },
 ];
 
 const NavbarLink: LinkComponent<typeof TanstackLinkComponent> = (props) => {
@@ -26,9 +26,9 @@ export default function Navbar() {
   return (
     <header className="border-b px-4 md:px-6">
       <div className="flex h-12 items-center justify-between gap-4">
-        {/* Left side */}
+        {/* 左侧 */}
         <div className="flex items-center gap-2">
-          {/* Main nav */}
+          {/* 主要区域 */}
           <div className="flex items-center gap-6">
             <Link
               to="/"
@@ -36,7 +36,6 @@ export default function Navbar() {
             >
               Vtbsfun
             </Link>
-            {/* Navigation menu */}
             <NavigationMenu>
               <NavigationMenuList className="gap-2">
                 {navigationLinks.map((link, index) => (
@@ -48,7 +47,7 @@ export default function Navbar() {
             </NavigationMenu>
           </div>
         </div>
-        {/* Right side */}
+        {/* 右侧 */}
         {/* <div className="flex items-center gap-2">
           <Button asChild variant="ghost" size="sm" className="text-sm">
             <a href="#">Sign In</a>
