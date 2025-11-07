@@ -1,6 +1,7 @@
-import { queryOptions, UseQueryOptions } from "@tanstack/react-query";
-import { safeParse, InferInput, object, number, array } from "valibot";
+import { queryOptions, useQuery } from "@tanstack/react-query";
+import { InferInput, object, number, array } from "valibot";
 import { vtbsApiClient } from "..";
+import { safeParseInputAgainstSchema } from "@/utils";
 
 const guardHistorySchema = array(
   object({
@@ -9,31 +10,21 @@ const guardHistorySchema = array(
   }),
 );
 
-type guardHistory = InferInput<typeof guardHistorySchema>;
+type GuardHistory = InferInput<typeof guardHistorySchema>;
 
-/** mid */
-async function getGuardHistory(id: number): Promise<guardHistory> {
+async function getGuardHistory(id: number): Promise<GuardHistory> {
   const res = await vtbsApiClient.get(`v2/bulkGuard/${id}`).json();
-  const validation = safeParse(guardHistorySchema, res);
-  if (validation.issues) {
-    throw new Error(validation.issues.toString());
-  }
-  return validation.output;
+  return safeParseInputAgainstSchema<GuardHistory>(guardHistorySchema, res);
 }
 
-export function createGetGuardHistoryQueryOptions<
-  TData = guardHistory,
-  TError = Error,
->(
-  id: number,
-  options?: Omit<
-    UseQueryOptions<guardHistory, TError, TData>,
-    "queryKey" | "queryFn"
-  >,
-) {
+export function createGuardHistoryQueryOptions(id: number) {
   return queryOptions({
-    ...options,
     queryKey: ["guardHistory", id],
     queryFn: () => getGuardHistory(id),
   });
+}
+
+/** id 是用户 id 即 mid */
+export function useGuardHistoryQuery(id: number) {
+  return useQuery(createGuardHistoryQueryOptions(id));
 }

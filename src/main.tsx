@@ -4,12 +4,13 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
+import { DEFAULT_GCTIME, DEFAULT_STALETIME } from "./constants";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 30 * 1000 * 30,
-      gcTime: 30 * 1000 * 60,
+      staleTime: DEFAULT_STALETIME,
+      gcTime: DEFAULT_GCTIME,
       retry: false,
     },
   },

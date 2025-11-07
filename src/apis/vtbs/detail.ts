@@ -1,7 +1,7 @@
-import { queryOptions, UseQueryOptions } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { vtbsApiClient } from "..";
-// 导入 Valibot 函数
-import { object, string, number, array, safeParse, InferInput } from "valibot";
+import { object, string, number, array, InferInput, union } from "valibot";
+import { safeParseInputAgainstSchema } from "@/utils";
 
 const lastLiveSchema = object({
   online: number(),
@@ -24,7 +24,8 @@ const detailSchema = object({
   liveStatus: number(),
   recordNum: number(),
   guardNum: number(),
-  lastLive: lastLiveSchema,
+  /** 这个字段有返回空对象 {} 的情况 */
+  lastLive: union([lastLiveSchema, object({})]),
   guardChange: number(),
   guardType: array(number()),
   online: number(),
@@ -35,26 +36,19 @@ const detailSchema = object({
 
 type Detail = InferInput<typeof detailSchema>;
 
-/** id 是用户 id 即 mid */
 async function getDetail(id: number): Promise<Detail> {
   const res = await vtbsApiClient.get(`v1/detail/${id}`).json();
-  const validation = safeParse(detailSchema, res);
-  if (validation.issues) {
-    throw new Error(validation.issues.toString());
-  }
-  return validation.output;
+  return safeParseInputAgainstSchema<Detail>(detailSchema, res);
 }
 
-export function createGetDetailQueryOptions<TData = Detail, TError = Error>(
-  id: number,
-  options?: Omit<
-    UseQueryOptions<Detail, TError, TData>,
-    "queryKey" | "queryFn"
-  >,
-) {
+export function createDetailQueryOptions(id: number) {
   return queryOptions({
-    ...options,
-    queryKey: ["detail", id],
+    queryKey: ["vtb-detail", id],
     queryFn: () => getDetail(id),
   });
+}
+
+/** id 是用户 id 即 mid */
+export function useDetailQuery(id: number) {
+  return useQuery(createDetailQueryOptions(id));
 }

@@ -1,6 +1,7 @@
-import { queryOptions, UseQueryOptions } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { vtbsApiClient } from "..";
-import { string, array, safeParse, InferInput } from "valibot";
+import { string, array, InferInput } from "valibot";
+import { safeParseInputAgainstSchema } from "@/utils";
 
 const liveRoomsSchema = array(string());
 
@@ -8,25 +9,16 @@ type LiveRooms = InferInput<typeof liveRoomsSchema>;
 
 async function getLiveRooms(): Promise<LiveRooms> {
   const res = await vtbsApiClient.get(`v1/living`).json();
-  const validation = safeParse(liveRoomsSchema, res);
-  if (validation.issues) {
-    throw new Error(validation.issues.toString());
-  }
-  return validation.output;
+  return safeParseInputAgainstSchema<LiveRooms>(liveRoomsSchema, res);
 }
 
-export function createGetLiveRoomsQueryOptions<
-  TData = Promise<LiveRooms>,
-  TError = Error,
->(
-  options?: Omit<
-    UseQueryOptions<Promise<LiveRooms>, TError, TData>,
-    "queryKey" | "queryFn"
-  >,
-) {
+export function createLiveRoomsQueryOptions() {
   return queryOptions({
-    ...options,
     queryKey: ["liveRooms"],
     queryFn: getLiveRooms,
   });
+}
+
+export function useLiveRoomsQuery() {
+  return useQuery(createLiveRoomsQueryOptions());
 }

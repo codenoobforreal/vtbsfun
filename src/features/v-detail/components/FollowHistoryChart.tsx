@@ -7,8 +7,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatLargeNumber, sampleTimeSeriesData } from "@/utils";
-import { useQuery } from "@tanstack/react-query";
-import { createGetFollowHistoryQueryOptions } from "@/apis/vtbs/followHistory";
+import { useFollowHistoryQuery } from "@/apis/vtbs/followHistory";
 import { useParams } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -31,12 +30,8 @@ function Chart() {
   const { mId } = useParams({ from: "/all/$mId" });
   const mIdInNumber = Number(mId);
 
-  const { data, isPending, isError, error } = useQuery(
-    createGetFollowHistoryQueryOptions(mIdInNumber, {
-      staleTime: 60 * 1000 * 60 * 2,
-      gcTime: 60 * 1000 * 60,
-    }),
-  );
+  const { data, isPending, isError, error } =
+    useFollowHistoryQuery(mIdInNumber);
 
   const chartData = useMemo(() => {
     if (!data) return [];

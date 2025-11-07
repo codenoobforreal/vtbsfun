@@ -1,6 +1,7 @@
-import { queryOptions, UseQueryOptions } from "@tanstack/react-query";
-import { safeParse, InferInput, object, number, array } from "valibot";
+import { queryOptions, useQuery } from "@tanstack/react-query";
+import { InferInput, object, number, array } from "valibot";
 import { vtbsApiClient } from "..";
+import { safeParseInputAgainstSchema } from "@/utils";
 
 const onlineHistorySchema = array(
   object({
@@ -11,29 +12,20 @@ const onlineHistorySchema = array(
   }),
 );
 
-type onlineHistory = InferInput<typeof onlineHistorySchema>;
+type OnlineHistory = InferInput<typeof onlineHistorySchema>;
 
-async function getOnlineHistory(): Promise<onlineHistory> {
+async function getOnlineHistory(): Promise<OnlineHistory> {
   const res = await vtbsApiClient.get(`v2/bulkOnline`).json();
-  const validation = safeParse(onlineHistorySchema, res);
-  if (validation.issues) {
-    throw new Error(validation.issues.toString());
-  }
-  return validation.output;
+  return safeParseInputAgainstSchema<OnlineHistory>(onlineHistorySchema, res);
 }
 
-export function createGetOnlineHistoryQueryOptions<
-  TData = Promise<onlineHistory>,
-  TError = Error,
->(
-  options?: Omit<
-    UseQueryOptions<Promise<onlineHistory>, TError, TData>,
-    "queryKey" | "queryFn"
-  >,
-) {
+export function createOnlineHistoryQueryOptions() {
   return queryOptions({
-    ...options,
     queryKey: ["onlineHistory"],
     queryFn: getOnlineHistory,
   });
+}
+
+export function useOnlineHistoryQuery() {
+  return useQuery(createOnlineHistoryQueryOptions());
 }

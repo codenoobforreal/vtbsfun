@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { GuardTypeIndex, Info } from "@/apis/vtbs/info";
+import { Info } from "@/apis/vtbs/info";
 import { useRankStore } from "@/store";
 import { useShallow } from "zustand/react/shallow";
 
@@ -53,15 +53,15 @@ const conditionConfig: Record<ConditionKey, ConditionConfig> = {
   },
   byGovernor: {
     label: "总督",
-    selector: (info: Info) => info.guardType[GuardTypeIndex.GOVERNOR],
+    selector: (info: Info) => info.guardType[0],
   },
   byAdmiral: {
     label: "提督",
-    selector: (info: Info) => info.guardType[GuardTypeIndex.ADMIRAL],
+    selector: (info: Info) => info.guardType[1],
   },
   byCaptain: {
     label: "舰长",
-    selector: (info: Info) => info.guardType[GuardTypeIndex.CAPTAIN],
+    selector: (info: Info) => info.guardType[2],
   },
 } as const;
 

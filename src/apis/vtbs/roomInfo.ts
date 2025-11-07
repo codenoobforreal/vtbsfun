@@ -1,6 +1,7 @@
-import { queryOptions, UseQueryOptions } from "@tanstack/react-query";
-import { string, safeParse, InferInput, object, number } from "valibot";
+import { queryOptions, useQuery } from "@tanstack/react-query";
+import { string, InferInput, object, number } from "valibot";
 import { vtbsApiClient } from "..";
+import { safeParseInputAgainstSchema } from "@/utils";
 
 const roomInfoSchema = object({
   uid: number(),
@@ -12,29 +13,19 @@ const roomInfoSchema = object({
 
 type RoomInfo = InferInput<typeof roomInfoSchema>;
 
-/** 这里的 id 是 roomId */
 async function getRoomInfo(id: number): Promise<RoomInfo> {
   const res = await vtbsApiClient.get(`v1/room/${id}`).json();
-  const validation = safeParse(roomInfoSchema, res);
-  if (validation.issues) {
-    throw new Error(validation.issues.toString());
-  }
-  return validation.output;
+  return safeParseInputAgainstSchema<RoomInfo>(roomInfoSchema, res);
 }
 
-export function createGetRoomInfoQueryOptions<
-  TData = Promise<RoomInfo>,
-  TError = Error,
->(
-  id: number,
-  options?: Omit<
-    UseQueryOptions<Promise<RoomInfo>, TError, TData>,
-    "queryKey" | "queryFn"
-  >,
-) {
+export function createRoomInfoQueryOptions(id: number) {
   return queryOptions({
-    ...options,
     queryKey: ["roomInfo", id],
     queryFn: () => getRoomInfo(id),
   });
+}
+
+/** id 是 roomid */
+export function useRoomInfoQuery(id: number) {
+  return useQuery(createRoomInfoQueryOptions(id));
 }

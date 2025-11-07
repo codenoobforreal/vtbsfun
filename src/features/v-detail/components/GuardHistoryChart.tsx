@@ -7,12 +7,11 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatLargeNumber, sampleTimeSeriesData } from "@/utils";
-import { useQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { createGetGuardHistoryQueryOptions } from "@/apis/vtbs/guardHistory";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatTimestamp } from "@/utils/time";
+import { useGuardHistoryQuery } from "@/apis/vtbs/guardHistory";
 
 export function GuardHistoryChart() {
   return (
@@ -40,12 +39,7 @@ function Chart() {
     // isFetching,
     // isStale,
     // dataUpdatedAt,
-  } = useQuery(
-    createGetGuardHistoryQueryOptions(mIdInNumber, {
-      staleTime: 60 * 1000 * 60 * 2,
-      gcTime: 60 * 1000 * 60,
-    }),
-  );
+  } = useGuardHistoryQuery(mIdInNumber);
 
   // const isFreshCachedData = isSuccess && !isFetching && !isStale;
 

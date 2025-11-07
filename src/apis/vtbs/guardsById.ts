@@ -1,6 +1,7 @@
-import { array, object, number, string, InferInput, safeParse } from "valibot";
+import { array, object, number, string, InferInput } from "valibot";
 import { vtbsApiClient } from "..";
-import { queryOptions, UseQueryOptions } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
+import { safeParseInputAgainstSchema } from "@/utils";
 
 const guardsByIdSchema = array(
   object({
@@ -14,29 +15,19 @@ const guardsByIdSchema = array(
 
 type GuardsById = InferInput<typeof guardsByIdSchema>;
 
-/** id 是用户 id 即 mid */
 async function getGuardsById(id: number): Promise<GuardsById> {
   const res = await vtbsApiClient.get(`v1/guard/${id}`).json();
-  const validation = safeParse(guardsByIdSchema, res);
-  if (validation.issues) {
-    throw new Error(validation.issues.toString());
-  }
-  return validation.output;
+  return safeParseInputAgainstSchema<GuardsById>(guardsByIdSchema, res);
 }
 
-export function createGetGuardsByIdQueryOptions<
-  TData = Promise<GuardsById>,
-  TError = Error,
->(
-  id: number,
-  options?: Omit<
-    UseQueryOptions<Promise<GuardsById>, TError, TData>,
-    "queryKey" | "queryFn"
-  >,
-) {
+export function createGuardsByIdQueryOptions(id: number) {
   return queryOptions({
-    ...options,
-    queryKey: ["guards", id],
+    queryKey: ["guardsById", id],
     queryFn: () => getGuardsById(id),
   });
+}
+
+/** id 是用户 id 即 mid */
+export function useGuardsByIdQuery(id: number) {
+  return useQuery(createGuardsByIdQueryOptions(id));
 }

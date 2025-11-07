@@ -1,6 +1,7 @@
-import { queryOptions, UseQueryOptions } from "@tanstack/react-query";
-import { safeParse, InferInput, object, number, array } from "valibot";
+import { queryOptions, useQuery } from "@tanstack/react-query";
+import { InferInput, object, number, array } from "valibot";
 import { vtbsApiClient } from "..";
+import { safeParseInputAgainstSchema } from "@/utils";
 
 const followHistorySchema = array(
   object({
@@ -12,29 +13,19 @@ const followHistorySchema = array(
 
 type FollowHistory = InferInput<typeof followHistorySchema>;
 
-/** mid */
 async function getFollowHistory(id: number): Promise<FollowHistory> {
   const res = await vtbsApiClient.get(`v2/bulkActive/${id}`).json();
-  const validation = safeParse(followHistorySchema, res);
-  if (validation.issues) {
-    throw new Error(validation.issues.toString());
-  }
-  return validation.output;
+  return safeParseInputAgainstSchema<FollowHistory>(followHistorySchema, res);
 }
 
-export function createGetFollowHistoryQueryOptions<
-  TData = FollowHistory,
-  TError = Error,
->(
-  id: number,
-  options?: Omit<
-    UseQueryOptions<FollowHistory, TError, TData>,
-    "queryKey" | "queryFn"
-  >,
-) {
+export function createFollowHistoryQueryOptions(id: number) {
   return queryOptions({
-    ...options,
     queryKey: ["followHistory", id],
     queryFn: () => getFollowHistory(id),
   });
+}
+
+/** id 是用户 id 即 mid */
+export function useFollowHistoryQuery(id: number) {
+  return useQuery(createFollowHistoryQueryOptions(id));
 }

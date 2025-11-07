@@ -1,13 +1,12 @@
-import { createGetDetailQueryOptions } from "@/apis/vtbs/detail";
+import { createDetailQueryOptions, useDetailQuery } from "@/apis/vtbs/detail";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { getProtocolAndDomain, openUrlWithDefaultBrower } from "@/utils";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { ComponentPropsWithoutRef } from "react";
 import { BILI_LIVE_ROOM_DOMAIN, BILI_PERSON_SPACE_DOMAIN } from "@/constants";
-import { createGetFollowHistoryQueryOptions } from "@/apis/vtbs/followHistory";
-import { createGetGuardHistoryQueryOptions } from "@/apis/vtbs/guardHistory";
+import { createFollowHistoryQueryOptions } from "@/apis/vtbs/followHistory";
+import { createGuardHistoryQueryOptions } from "@/apis/vtbs/guardHistory";
 import { FollowHistoryChart } from "@/features/v-detail/components/FollowHistoryChart";
 import { GuardHistoryChart } from "@/features/v-detail/components/GuardHistoryChart";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,23 +20,9 @@ export const Route = createFileRoute("/all/$mId")({
     const { mId } = params;
     const mIdInNumber = Number(mId);
 
-    queryClient.prefetchQuery(
-      createGetDetailQueryOptions(mIdInNumber, { staleTime: 60 * 1000 * 10 }),
-    );
-
-    queryClient.prefetchQuery(
-      createGetFollowHistoryQueryOptions(mIdInNumber, {
-        staleTime: 60 * 1000 * 60 * 2,
-        gcTime: 60 * 1000 * 60,
-      }),
-    );
-
-    queryClient.prefetchQuery(
-      createGetGuardHistoryQueryOptions(mIdInNumber, {
-        staleTime: 60 * 1000 * 60 * 2,
-        gcTime: 60 * 1000 * 60,
-      }),
-    );
+    queryClient.prefetchQuery(createDetailQueryOptions(mIdInNumber));
+    queryClient.prefetchQuery(createFollowHistoryQueryOptions(mIdInNumber));
+    queryClient.prefetchQuery(createGuardHistoryQueryOptions(mIdInNumber));
   },
 });
 
@@ -63,9 +48,7 @@ function DetailSection() {
     isFetching,
     isStale,
     dataUpdatedAt,
-  } = useQuery(
-    createGetDetailQueryOptions(mIdInNumber, { staleTime: 60 * 1000 * 10 }),
-  );
+  } = useDetailQuery(mIdInNumber);
 
   const isFreshCachedData = isSuccess && !isFetching && !isStale;
 
@@ -106,10 +89,15 @@ function DetailSection() {
     uname,
     title,
     roomid,
-    lastLive: { time: lastLiveTime },
+    lastLive,
     guardType: [governor, admiral, captain],
     video,
   } = data;
+
+  const lastLiveTime =
+    "time" in lastLive
+      ? timeFormatUtils.formatShortChineseDate(lastLive.time)
+      : "无时间数据";
 
   const topPhotoUrl =
     getProtocolAndDomain(face) === null
@@ -179,7 +167,7 @@ function DetailSection() {
           </span>
           <div className="flex flex-col gap-1 items-center-safe">
             <span>上次直播</span>
-            <span>{timeFormatUtils.formatShortChineseDate(lastLiveTime)}</span>
+            <span>{lastLiveTime}</span>
           </div>
         </DetailCard>
         <DetailCard>

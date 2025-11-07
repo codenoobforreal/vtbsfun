@@ -1,4 +1,4 @@
-import { createGetInfoListQueryOptions } from "@/apis/vtbs/info";
+import { createInfoListQueryOptions } from "@/apis/vtbs/info";
 import ConditionSelector from "@/features/all/components/ConditionSelector";
 import LimitSelector from "@/features/all/components/LimitSelector";
 import { List } from "@/features/all/components/List";
@@ -8,12 +8,7 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/all/")({
   component: RankPage,
   loader: ({ context }) => {
-    context.queryClient.prefetchQuery(
-      createGetInfoListQueryOptions({
-        staleTime: 60 * 1000 * 60,
-        gcTime: 60 * 1000 * 60,
-      }),
-    );
+    context.queryClient.prefetchQuery(createInfoListQueryOptions());
   },
 });
 

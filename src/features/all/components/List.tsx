@@ -1,6 +1,5 @@
-import { createGetInfoListQueryOptions, Info } from "@/apis/vtbs/info";
+import { Info, useInfoListQuery } from "@/apis/vtbs/info";
 import { useRankStore } from "@/store";
-import { useQuery } from "@tanstack/react-query";
 import { useDeferredValue, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { Charset, Document, DocumentData } from "flexsearch";
@@ -25,12 +24,7 @@ export function List() {
     isFetching,
     isStale,
     dataUpdatedAt,
-  } = useQuery(
-    createGetInfoListQueryOptions({
-      staleTime: 60 * 1000 * 60,
-      gcTime: 60 * 1000 * 60,
-    }),
-  );
+  } = useInfoListQuery();
 
   const isFreshCachedData = isSuccess && !isFetching && !isStale;
 
