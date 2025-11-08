@@ -120,7 +120,7 @@ function DetailSection() {
         </DetailCard>
         <DetailCard className="col-span-2">
           <span
-            className="text-lg font-semibold hover:underline underline-offset-4 cursor-pointer"
+            className="text-lg font-semibold hover:underline underline-offset-4 cursor-pointer line-clamp-2"
             onClick={() =>
               openUrlWithDefaultBrower(
                 `${BILI_PERSON_SPACE_DOMAIN}/${mIdInNumber}`,
@@ -143,7 +143,7 @@ function DetailSection() {
         <DetailCard>
           {/* <span>{roomid}</span> */}
           <span
-            className="truncate text-lg font-semibold hover:underline underline-offset-4 cursor-pointer"
+            className="text-lg font-semibold hover:underline underline-offset-4 cursor-pointer line-clamp-2"
             onClick={() =>
               openUrlWithDefaultBrower(`${BILI_LIVE_ROOM_DOMAIN}/${roomid}`)
             }

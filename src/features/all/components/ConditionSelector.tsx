@@ -9,6 +9,7 @@ import {
 import { Info } from "@/apis/vtbs/info";
 import { useRankStore } from "@/store";
 import { useShallow } from "zustand/react/shallow";
+import { timeFormatUtils } from "@/utils/time";
 
 export type ConditionKey =
   | "byFollower"
@@ -21,65 +22,69 @@ export type ConditionKey =
   | "byAdmiral"
   | "byCaptain";
 
+const defaultFormatValue = (value: number) => value;
+
+const formatRelativeTime = (value: number) =>
+  timeFormatUtils.formatRelativeTime(value);
+
 interface ConditionConfig {
   label: string;
-  selector: (info: Info) => number | undefined | null;
+  selector: (info: Info) => number | undefined;
+  formatValue: (value: number) => number | string;
 }
 
-const conditionConfig: Record<ConditionKey, ConditionConfig> = {
+export const conditionConfig = {
   byFollower: {
     label: "关注",
     selector: (info: Info) => info.follower,
+    formatValue: defaultFormatValue,
   },
   byVideo: {
     label: "视频",
     selector: (info: Info) => info.video,
+    formatValue: defaultFormatValue,
   },
   byRise: {
     label: "关注变化",
     selector: (info: Info) => info.rise,
+    formatValue: defaultFormatValue,
   },
   byLastLive: {
     label: "上次直播",
     selector: (info: Info) =>
       "time" in info.lastLive ? info.lastLive.time : undefined,
+    formatValue: formatRelativeTime,
   },
   byGuardNum: {
     label: "舰团",
     selector: (info: Info) => info.guardNum,
+    formatValue: defaultFormatValue,
   },
   byGuardChange: {
     label: "舰团变化",
     selector: (info: Info) => info.guardChange,
+    formatValue: defaultFormatValue,
   },
   byGovernor: {
     label: "总督",
     selector: (info: Info) => info.guardType[0],
+    formatValue: defaultFormatValue,
   },
   byAdmiral: {
     label: "提督",
     selector: (info: Info) => info.guardType[1],
+    formatValue: defaultFormatValue,
   },
   byCaptain: {
     label: "舰长",
     selector: (info: Info) => info.guardType[2],
+    formatValue: defaultFormatValue,
   },
-} as const;
+} as const satisfies Record<ConditionKey, ConditionConfig>;
 
-export const conditionToSelectFn = Object.fromEntries(
-  Object.entries(conditionConfig).map(([key, config]) => [
-    key,
-    config.selector,
-  ]),
-) as Record<ConditionKey, (info: Info) => number>;
-
-export const conditionToLabel = Object.fromEntries(
-  Object.entries(conditionConfig).map(([key, config]) => [key, config.label]),
-) as Record<ConditionKey, string>;
-
-const items = Object.entries(conditionConfig).map(([value, config]) => ({
-  label: config.label,
-  value: value as ConditionKey,
+const items = (Object.keys(conditionConfig) as ConditionKey[]).map((key) => ({
+  label: conditionConfig[key].label,
+  value: key,
 }));
 
 export default function ConditionSelector() {
@@ -96,9 +101,7 @@ export default function ConditionSelector() {
       <Select
         items={items}
         value={condition}
-        onValueChange={(value) =>
-          changeCondition(value as keyof typeof conditionToSelectFn)
-        }
+        onValueChange={(value) => changeCondition(value)}
       >
         <SelectTrigger>
           <SelectValue />

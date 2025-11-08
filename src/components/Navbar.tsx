@@ -6,7 +6,7 @@ import {
 import { Link, LinkComponent } from "@tanstack/react-router";
 import { TanstackLinkComponent } from "./CustomLink";
 
-const navigationLinks = [
+const links = [
   { to: "/" as const, children: "关于" },
   { to: "/all" as const, children: "全体", preload: "render" as const },
 ];
@@ -38,7 +38,7 @@ export default function Navbar() {
             </Link>
             <NavigationMenu>
               <NavigationMenuList className="gap-2">
-                {navigationLinks.map((link, index) => (
+                {links.map((link, index) => (
                   <NavigationMenuItem key={index}>
                     <NavbarLink {...link} />
                   </NavigationMenuItem>

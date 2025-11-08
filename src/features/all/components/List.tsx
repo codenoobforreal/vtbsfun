@@ -4,7 +4,7 @@ import { useDeferredValue, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { Charset, Document, DocumentData } from "flexsearch";
 import { multiConditionSortDescending } from "../infoSorter";
-import { conditionToLabel, conditionToSelectFn } from "./ConditionSelector";
+import { conditionConfig } from "./ConditionSelector";
 import { Card } from "@/components/ui/card";
 import { Link } from "@tanstack/react-router";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -83,7 +83,7 @@ export function List() {
 
     return multiConditionSortDescending(
       searchedData,
-      [conditionToSelectFn[condition]],
+      [conditionConfig[condition]["selector"]],
       limit,
     );
   }, [condition, data, limit, deferredSearch, vtbListIndex]);
@@ -120,12 +120,11 @@ function Item(props: { data: Info }) {
   const condition = useRankStore((s) => s.condition);
   const { face, uname, title, sign, mid, roomid } = props.data;
   const avatarSrc = `${face}@160h_160w`;
-  const conditionLabel = conditionToLabel[condition];
-  const conditionValue = conditionToSelectFn[condition](props.data);
-  const displayConditionValue =
-    condition === "byLastLive"
-      ? timeFormatUtils.formatRelativeTime(conditionValue)
-      : conditionValue;
+  const conditionLabel = conditionConfig[condition]["label"];
+  const conditionValue = conditionConfig[condition]["selector"](props.data);
+  const displayConditionValue = conditionConfig[condition]["formatValue"](
+    conditionValue as number,
+  );
 
   return (
     <Card className="flex-row gap-4 my-4 w-[540px] p-0 overflow-hidden">

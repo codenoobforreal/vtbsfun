@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const RootLayout = () => (
   <>
@@ -9,6 +10,7 @@ const RootLayout = () => (
     <div className="my-4 max-w-7xl min-w-2xl w-9/10 m-auto md:w-4/5">
       <Outlet />
     </div>
+    <ReactQueryDevtools initialIsOpen={false} />
     <TanStackRouterDevtools />
   </>
 );
