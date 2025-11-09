@@ -1,0 +1,28 @@
+{
+  "template": "# 版本 v{{TO_TAG}} 更新日志\n\n{{CHANGELOG}}\n\n{{#if UNCATEGORIZED}}\n<details>\n<summary>🔧 其他变更</summary>\n\n{{UNCATEGORIZED}}\n</details>\n{{/if}}\n\n---\n\n**发布统计** 📊 \n- **合并的PR数量:** {{PULL_REQUESTS}}\n- **贡献者:** {{CONTRIBUTORS}}",
+  "categories": [
+    {
+      "title": "## ✨ 新功能",
+      "labels": ["feat"]
+    },
+    {
+      "title": "## 💪 增强",
+      "labels": ["enhancement"]
+    },
+    {
+      "title": "## 🐛 错误修复",
+      "labels": ["fix"]
+    },
+    {
+      "title": "## ⚡️ 性能优化",
+      "labels": ["perf"]
+    },
+    {
+      "title": "## 📖 文档更新",
+      "labels": ["docs"]
+    }
+  ],
+  "pr_template": "- #{{NUMBER}}: {{TITLE}} (由 @{{AUTHOR}})",
+  "empty_template": "- 本次发布无此类变更。",
+  "ignore_labels": ["dependencies", "skip-changelog", "no-changelog"]
+}
