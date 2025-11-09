@@ -22,7 +22,7 @@ jobs:
         uses: mikepenz/release-changelog-builder-action@v6
         id: generate_changelog
         with:
-          mode: "COMMIT"
+          configuration: "changelog-template.json"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
