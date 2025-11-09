@@ -1,0 +1,93 @@
+name: "publish"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  create-changelog:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    outputs:
+      changelog: ${{ steps.generate_changelog.outputs.changelog }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # 获取完整的提交历史，以便生成变更日志
+
+      - name: Build Changelog
+        uses: mikepenz/release-changelog-builder-action@v6
+        id: generate_changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-tauri:
+    permissions:
+      contents: write
+    needs: create-changelog
+    if: needs.create-changelog.result == 'success' && github.base_ref == 'refs/heads/master'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+            args: "--target aarch64-apple-darwin"
+          - platform: "macos-latest" # for Intel based macs.
+            args: "--target x86_64-apple-darwin"
+          - platform: "ubuntu-22.04"
+            args: ""
+          - platform: "windows-latest"
+            args: ""
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      # 工作流中使用的第三方 Action（例如 tauri-apps/tauri-action或其他 Action）其内部实现可能依赖于 Node.js 环境或相关的 npm 包。预先设置好 Node.js 环境可以确保这些 Action 能够正常运行。
+      - uses: actions/checkout@v5
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: "bun"
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # 仅在macOS运行器上安装额外的编译目标，以加速Windows和Linux构建
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04' # 这里的值需要和targets的设置一致
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: install frontend dependencies
+        run: bun install --frozen-lockfile
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: app-v__VERSION__ # 动作会自动将__VERSION__替换为应用版本。
+          releaseName: "App v__VERSION__"
+          releaseBody: ${{ needs.create-changelog.outputs.changelog }}
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}

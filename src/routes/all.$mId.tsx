@@ -95,16 +95,16 @@ function DetailSection() {
       : `${getProtocolAndDomain(face)}/${topPhoto}`;
 
   return (
-    <div className="space-y-4">
-      {topPhotoUrl !== "" && (
-        <Card className="p-0 overflow-hidden">
-          <img src={topPhotoUrl} alt="空间顶部图片" title="空间顶部图片" />
-        </Card>
-      )}
-      <Badge variant="success">
+    <div>
+      <Badge variant="success" className="my-4">
         当前数据更新于：{timeFormatUtils.formatChineseDateTime(dataUpdatedAt)}
       </Badge>
       <div className="grid gap-4 grid-cols-3 grid-flow-dense lg:grid-cols-4 lg:gap-4 xl:grid-cols-5 xl:gap-6">
+        {topPhotoUrl !== "" && (
+          <Card className="p-0 overflow-hidden col-span-full">
+            <img src={topPhotoUrl} alt="空间顶部图片" title="空间顶部图片" />
+          </Card>
+        )}
         <DetailCard className="p-0">
           <img
             src={`${face}@160w_160h`}
@@ -179,13 +179,12 @@ function DetailSection() {
 function DetailCard(props: ComponentPropsWithoutRef<"div">) {
   return (
     <Card
+      {...props}
       className={cn(
         "py-2 px-2 md:px-4 overflow-hidden justify-evenly items-center-safe gap-2 min-w-32 md:min-w-40 min-h-32 md:min-h-40 select-none",
         props.className,
       )}
-    >
-      {props.children}
-    </Card>
+    />
   );
 }
 
